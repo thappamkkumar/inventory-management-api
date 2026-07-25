@@ -57,4 +57,9 @@ class AuthController extends Controller
             'message' => 'Logout successful',
         ]);
     }
+
+    public function me()
+    {
+        return new UserResource(auth()->user());
+    }
 }
