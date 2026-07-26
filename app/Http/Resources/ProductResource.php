@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\CategoryResource;
 
 class ProductResource extends JsonResource
 {
@@ -16,12 +17,19 @@ class ProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'category_id' => $this->category_id,
+            
+
             'name' => $this->name,
             'sku' => $this->sku,
             'description' => $this->description,
             'price' => $this->price,
             'stock' => $this->stock,
+            'category' => CategoryResource::make(
+                $this->whenLoaded('category')
+            ),
             'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

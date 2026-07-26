@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
@@ -27,25 +28,33 @@ class ProductTest extends TestCase
     #[Test]
     public function authenticated_user_can_create_product(): void
     {
-        $data = [
+        $category = Category::factory()->create();
+
+        $response = $this->postJson(route('products.store'), [
+            'category_id' => $category->id,
             'name' => 'iPhone 16',
             'sku' => 'IPHONE-16',
             'description' => 'Latest iPhone',
             'price' => 99999,
             'stock' => 25,
-        ];
-
-        $response = $this->postJson(route('products.store'), $data);
+        ]);
 
         $response
             ->assertCreated()
             ->assertJson([
                 'success' => true,
                 'message' => 'Product created successfully.',
+                'data' => [
+                    'category_id' => $category->id,
+                    'category' => [
+                        'id' => $category->id,
+                    ],
+                ],
             ]);
 
         $this->assertDatabaseHas('products', [
             'sku' => 'IPHONE-16',
+            'category_id' => $category->id,
         ]);
     }
 
@@ -59,7 +68,18 @@ class ProductTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonStructure([
-                'data',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'category_id',
+                        'category',
+                        'name',
+                        'sku',
+                        'description',
+                        'price',
+                        'stock',
+                    ],
+                ],
                 'links',
                 'meta',
             ]);
@@ -70,21 +90,33 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->getJson(route('products.show', $product->id));
+        $response = $this->getJson(route('products.show', $product));
 
         $response
             ->assertOk()
-            ->assertJsonFragment([
-                'id' => $product->id,
+            ->assertJson([
+                'data' => [
+                    'id' => $product->id,
+                    'category_id' => $product->category_id,
+                    'category' => [
+                        'id' => $product->category_id,
+                    ],
+                ],
             ]);
     }
 
     #[Test]
     public function authenticated_user_can_update_product(): void
     {
-        $product = Product::factory()->create();
+        $oldCategory = Category::factory()->create();
+        $newCategory = Category::factory()->create();
 
-        $response = $this->putJson(route('products.update', $product->id), [
+        $product = Product::factory()->create([
+            'category_id' => $oldCategory->id,
+        ]);
+
+        $response = $this->putJson(route('products.update', $product), [
+            'category_id' => $newCategory->id,
             'name' => 'Updated Product',
             'sku' => $product->sku,
             'description' => 'Updated Description',
@@ -97,10 +129,17 @@ class ProductTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'message' => 'Product updated successfully.',
+                'data' => [
+                    'category_id' => $newCategory->id,
+                    'category' => [
+                        'id' => $newCategory->id,
+                    ],
+                ],
             ]);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
+            'category_id' => $newCategory->id,
             'name' => 'Updated Product',
         ]);
     }
@@ -110,7 +149,7 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->deleteJson( route('products.destroy', $product->id));
+        $response = $this->deleteJson(route('products.destroy', $product));
 
         $response
             ->assertOk()
@@ -124,7 +163,7 @@ class ProductTest extends TestCase
         ]);
     }
 
-    
+    #[Test]
     public function authenticated_user_can_restore_product(): void
     {
         $product = Product::factory()->create();
@@ -144,5 +183,22 @@ class ProductTest extends TestCase
             'id' => $product->id,
             'deleted_at' => null,
         ]);
+    }
+
+    #[Test]
+    public function product_requires_existing_category(): void
+    {
+        $response = $this->postJson(route('products.store'), [
+            'category_id' => 999999,
+            'name' => 'Laptop',
+            'sku' => 'LAPTOP-001',
+            'description' => 'Gaming Laptop',
+            'price' => 1200,
+            'stock' => 5,
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('category_id');
     }
 }

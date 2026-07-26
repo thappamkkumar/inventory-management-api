@@ -24,6 +24,8 @@ class StoreProductRequest extends FormRequest
     {
         
         return [
+            'category_id' => ['nullable', 'exists:categories,id'],
+            
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:100', 'unique:products,sku'],
             'description' => ['nullable', 'string'],
@@ -35,7 +37,7 @@ class StoreProductRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
+        return [ 
             'name.required' => 'Product name is required.',
             'sku.required' => 'SKU is required.',
             'sku.unique' => 'SKU already exists.',

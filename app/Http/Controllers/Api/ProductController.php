@@ -24,13 +24,8 @@ class ProductController extends Controller
         $perPage = $request->integer('per_page', 10);
  
 
-        $products = Product::query() 
-            ->search($request->search)
-            ->filter(new ProductFilter($request))
-            ->sort(
-                $request->query('sort'),
-                $request->query('direction', 'asc')
-            )
+        $products = Product::with('category')  
+            ->filter(new ProductFilter($request)) 
             ->paginate($perPage);
 
         return ProductResource::collection($products);
@@ -43,7 +38,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->validated());
-
+        $product->load('category');
         return $this->created(
             'Product created successfully.',
             new ProductResource($product)
@@ -56,6 +51,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        $product->load('category');
         return new ProductResource($product);
     }
 
@@ -65,7 +61,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-
+        $product->load('category');
         return $this->success(
             'Product updated successfully.',
             new ProductResource($product)
@@ -92,7 +88,8 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()->findOrFail($id);
 
         $product->restore();
-
+        
+        $product->load('category');
         return $this->success(
             'Product restored successfully.',
             new ProductResource($product)

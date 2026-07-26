@@ -17,6 +17,8 @@ class UpdateProductRequest extends FormRequest
         $product = $this->route('product');
 
         return [
+            'category_id' => ['nullable', 'exists:categories,id'],
+            
             'name' => ['required', 'string', 'max:255'],
             'sku' => [
                 'required',
@@ -33,6 +35,7 @@ class UpdateProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            
             'name.required' => 'Product name is required.',
             'sku.required' => 'SKU is required.',
             'sku.unique' => 'SKU already exists.',
