@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Filters\ProductFilter;
+use App\Models\Category;
 
 class Product extends Model
 {
@@ -14,6 +15,7 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'category_id',
         'name',
         'sku',
         'description',
@@ -21,6 +23,11 @@ class Product extends Model
         'stock',
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
     public function attributes(): array
     {
         return [
@@ -28,6 +35,9 @@ class Product extends Model
         ];
     }
 
+    /**
+     * Get the category that owns the product.
+     */
     public function scopeSearch($query, ?string $search)
     {
         if (!$search) {
@@ -39,6 +49,10 @@ class Product extends Model
                 ->orWhere('sku', 'like', "%{$search}%");
         });
     }
+
+    /**
+     * Scope a query to sort products.
+     */
 
     public function scopeSort($query, ?string $sort, string $direction = 'asc')
     {
@@ -53,11 +67,21 @@ class Product extends Model
         return $query->orderBy($sort, $direction);
     }
 
+    /**
+     * Scope a query to apply filters.
+     */
     public function scopeFilter($query, ProductFilter $filter)
     {
         return $filter->apply($query);
        
     }
 
+    /**
+     * Get the category that owns the product.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
 }

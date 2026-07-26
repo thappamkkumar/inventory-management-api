@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Filters\CategoryFilter;
-
+use App\Models\Product;
 class Category extends Model
 {
     use HasFactory, SoftDeletes;
@@ -17,6 +17,7 @@ class Category extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+
         'name',
         'slug',
         'description',
@@ -30,4 +31,13 @@ class Category extends Model
     {
         return $filter->apply($query);
     }
+   
+    /**
+     * Get the products for the category.
+     */public function products()
+    {
+        return $this->hasMany(Product::class);
     }
+   
+ }
+    
