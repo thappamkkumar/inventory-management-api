@@ -27,8 +27,9 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });*/
 
-        Route::apiResource('products', ProductController::class);
-        Route::patch('/products/{id}/restore', [ProductController::class, 'restore']);
+        Route::apiResource('products', ProductController::class)->names('products')
+            ->only(['index', 'store', 'show', 'update', 'destroy']);
+        Route::patch('/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
 
     });
 
