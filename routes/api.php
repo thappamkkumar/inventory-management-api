@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::apiResource('products', ProductController::class);
+        Route::patch('/products/{id}/restore', [ProductController::class, 'restore']);
 
     });
 
