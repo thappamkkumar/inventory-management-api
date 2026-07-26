@@ -17,8 +17,12 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->unique()->word();
+
         return [
-            //
+            'name' => ucfirst($name),
+            'slug' => fake()->unique()->slug(),
+            'description' => fake()->sentence(),
         ];
     }
 }
