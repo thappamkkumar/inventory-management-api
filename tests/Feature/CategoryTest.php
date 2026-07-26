@@ -23,7 +23,7 @@ class CategoryTest extends TestCase
     {
         $this->authenticate();
 
-        $response = $this->postJson('/api/v1/categories', [
+        $response = $this->postJson(route('categories.store'), [
             'name' => 'Electronics',
             'slug' => 'electronics',
             'description' => 'Electronic products',
@@ -48,7 +48,7 @@ class CategoryTest extends TestCase
 
         Category::factory()->count(5)->create();
 
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->getJson(route('categories.index'));
 
         $response
             ->assertOk()
@@ -66,7 +66,7 @@ class CategoryTest extends TestCase
 
         $category = Category::factory()->create();
 
-        $response = $this->getJson("/api/v1/categories/{$category->id}");
+        $response = $this->getJson(route('categories.show', $category->id));
 
         $response
             ->assertOk()
@@ -84,7 +84,7 @@ class CategoryTest extends TestCase
 
         $category = Category::factory()->create();
 
-        $response = $this->putJson("/api/v1/categories/{$category->id}", [
+        $response = $this->putJson(route('categories.update', $category->id), [
             'name' => 'Updated Category',
             'slug' => 'updated-category',
             'description' => 'Updated description',
@@ -109,7 +109,7 @@ class CategoryTest extends TestCase
 
         $category = Category::factory()->create();
 
-        $response = $this->deleteJson("/api/v1/categories/{$category->id}");
+        $response = $this->deleteJson(route('categories.destroy', $category->id));
 
         $response
             ->assertOk()
@@ -132,7 +132,7 @@ class CategoryTest extends TestCase
 
         $category->delete();
 
-        $response = $this->patchJson("/api/v1/categories/{$category->id}/restore");
+        $response = $this->patchJson(route('categories.restore', $category->id));
 
         $response
             ->assertOk()
