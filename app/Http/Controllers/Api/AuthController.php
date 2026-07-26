@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    
+    /**
+     * Register a new user.
+     */
     public function register(RegisterRequest $request)
     {
          $user = User::create([
@@ -30,6 +32,9 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Login a user and return an access token.
+     */
     public function login(LoginRequest $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
@@ -49,6 +54,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout the authenticated user by revoking the current access token.
+     */
     public function logout()
     {
         auth()->user()->currentAccessToken()->delete();
@@ -58,6 +66,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Get the authenticated user's details.
+     */
     public function me()
     {
         return new UserResource(auth()->user());

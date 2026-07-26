@@ -8,12 +8,16 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Traits\ApiResponse;
+use App\Filters\ProductFilter;
 
 class ProductController extends Controller
 {
+    use ApiResponse;
+   
     /**
-     * Display a listing of the resource.
-     */
+    * Display a paginated list of products.
+    */
     public function index(Request $request)
     {
          
@@ -22,11 +26,7 @@ class ProductController extends Controller
 
         $products = Product::query() 
             ->search($request->search)
-            ->filter($request->only([
-                'stock',
-                'min_price',
-                'max_price',
-            ]))
+            ->filter(new ProductFilter($request))
             ->sort(
                 $request->query('sort'),
                 $request->query('direction', 'asc')
@@ -38,20 +38,21 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     *  Create a new product..
      */
     public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->validated());
 
-        return response()->json([
-            'message' => 'Product created successfully',
-            'product' => new ProductResource($product),
-        ], 201);
+        return $this->created(
+            'Product created successfully.',
+            new ProductResource($product)
+        );
+        
     }
 
     /**
-     * Display the specified resource.
+     * Display a single product.
      */
     public function show(Product $product)
     {
@@ -59,39 +60,42 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing product.
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
 
-        return response()->json([
-            'message' => 'Product updated successfully',
-            'product' => new ProductResource($product),
-        ]);
+        return $this->success(
+            'Product updated successfully.',
+            new ProductResource($product)
+        );
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft delete a product.
      */
     public function destroy(Product $product)
     {
         $product->delete();
 
-        return response()->json([
-            'message' => 'Product deleted successfully',
-        ]);
+        return $this->success(
+            'Product deleted successfully.'
+        );
     }
 
+    /**
+     * Restore a soft deleted product.
+     */
     public function restore($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
 
         $product->restore();
 
-        return response()->json([
-            'message' => 'Product restored successfully',
-            'product' => new ProductResource($product),
-        ]);
+        return $this->success(
+            'Product restored successfully.',
+            new ProductResource($product)
+        );
     }
 }

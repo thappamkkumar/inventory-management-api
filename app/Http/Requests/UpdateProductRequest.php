@@ -29,4 +29,18 @@ class UpdateProductRequest extends FormRequest
             'stock' => ['required', 'integer', 'min:0'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Product name is required.',
+            'sku.required' => 'SKU is required.',
+            'sku.unique' => 'SKU already exists.',
+            'price.required' => 'Price is required.',
+            'price.numeric' => 'Price must be a number.',
+            'stock.required' => 'Stock is required.',
+            'stock.integer' => 'Stock must be an integer.',
+        ];
+    }
+
 }

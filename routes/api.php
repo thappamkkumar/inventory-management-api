@@ -23,9 +23,9 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/user', function (Request $request) {
+        /*Route::get('/user', function (Request $request) {
             return $request->user();
-        });
+        });*/
 
         Route::apiResource('products', ProductController::class);
         Route::patch('/products/{id}/restore', [ProductController::class, 'restore']);

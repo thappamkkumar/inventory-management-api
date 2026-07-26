@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Filters\ProductFilter;
 
 class Product extends Model
 {
@@ -19,6 +20,13 @@ class Product extends Model
         'price',
         'stock',
     ];
+
+    public function attributes(): array
+    {
+        return [
+            'sku' => 'SKU',
+        ];
+    }
 
     public function scopeSearch($query, ?string $search)
     {
@@ -45,28 +53,10 @@ class Product extends Model
         return $query->orderBy($sort, $direction);
     }
 
-    public function scopeFilter($query, array $filters)
+    public function scopeFilter($query, ProductFilter $filter)
     {
-        // Stock
-        if (($filters['stock'] ?? null) === 'available') {
-            $query->where('stock', '>', 0);
-        }
-
-        if (($filters['stock'] ?? null) === 'out') {
-            $query->where('stock', 0);
-        }
-
-        // Minimum price
-        if (isset($filters['min_price'])) {
-            $query->where('price', '>=', $filters['min_price']);
-        }
-
-        // Maximum price
-        if (isset($filters['max_price'])) {
-            $query->where('price', '<=', $filters['max_price']);
-        }
-
-        return $query;
+        return $filter->apply($query);
+       
     }
 
 
