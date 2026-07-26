@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -12,8 +13,19 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
+
+
+    protected function prepareForValidation(): void
+    {
+        if (! $this->filled('slug')) {
+            $this->merge([
+                'slug' => str($this->name)->slug(),
+            ]);
+        }
+    }
+
 
     /**
      * Get the validation rules that apply to the request.
@@ -23,7 +35,14 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories')->ignore($this->category),
+            ],
+            'description' => ['nullable', 'string'],
         ];
     }
 }
