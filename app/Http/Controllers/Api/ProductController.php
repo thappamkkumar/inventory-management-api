@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
@@ -13,11 +14,27 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+         
+        $perPage = $request->integer('per_page', 10);
+ 
+
+        $products = Product::query() 
+            ->search($request->search)
+            ->filter($request->only([
+                'stock',
+                'min_price',
+                'max_price',
+            ]))
+            ->sort(
+                $request->query('sort'),
+                $request->query('direction', 'asc')
+            )
+            ->paginate($perPage);
 
         return ProductResource::collection($products);
+
     }
 
     /**
