@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Filters\ProductFilter;
 use App\Models\Category;
 use App\Models\Supplier;
-
+use App\Models\Inventory;
 
 class Product extends Model
 {
@@ -95,5 +95,12 @@ class Product extends Model
         return $this->belongsTo(Supplier::class);
     }
 
+    /**
+     * Get the inventories for the product.
+     */
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
     
 }
