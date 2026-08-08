@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -29,9 +30,11 @@ class ProductTest extends TestCase
     public function authenticated_user_can_create_product(): void
     {
         $category = Category::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         $response = $this->postJson(route('products.store'), [
             'category_id' => $category->id,
+            'supplier_id' => $supplier->id,
             'name' => 'iPhone 16',
             'sku' => 'IPHONE-16',
             'description' => 'Latest iPhone',
@@ -46,8 +49,12 @@ class ProductTest extends TestCase
                 'message' => 'Product created successfully.',
                 'data' => [
                     'category_id' => $category->id,
+                    'supplier_id' => $supplier->id,
                     'category' => [
                         'id' => $category->id,
+                    ],
+                    'supplier' => [
+                        'id' => $supplier->id,
                     ],
                 ],
             ]);
@@ -55,6 +62,7 @@ class ProductTest extends TestCase
         $this->assertDatabaseHas('products', [
             'sku' => 'IPHONE-16',
             'category_id' => $category->id,
+            'supplier_id' => $supplier->id,
         ]);
     }
 
@@ -73,6 +81,8 @@ class ProductTest extends TestCase
                         'id',
                         'category_id',
                         'category',
+                        'supplier_id',
+                        'supplier',
                         'name',
                         'sku',
                         'description',
@@ -88,18 +98,30 @@ class ProductTest extends TestCase
     #[Test]
     public function authenticated_user_can_view_single_product(): void
     {
-        $product = Product::factory()->create();
+        $category = Category::factory()->create();
+        $supplier = Supplier::factory()->create();
 
-        $response = $this->getJson(route('products.show', $product));
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'supplier_id' => $supplier->id,
+        ]);
+
+        $response = $this->getJson(
+            route('products.show', $product)
+        );
 
         $response
             ->assertOk()
             ->assertJson([
                 'data' => [
                     'id' => $product->id,
-                    'category_id' => $product->category_id,
+                    'category_id' => $category->id,
+                    'supplier_id' => $supplier->id,
                     'category' => [
-                        'id' => $product->category_id,
+                        'id' => $category->id,
+                    ],
+                    'supplier' => [
+                        'id' => $supplier->id,
                     ],
                 ],
             ]);
@@ -111,18 +133,26 @@ class ProductTest extends TestCase
         $oldCategory = Category::factory()->create();
         $newCategory = Category::factory()->create();
 
+        $oldSupplier = Supplier::factory()->create();
+        $newSupplier = Supplier::factory()->create();
+
         $product = Product::factory()->create([
             'category_id' => $oldCategory->id,
+            'supplier_id' => $oldSupplier->id,
         ]);
 
-        $response = $this->putJson(route('products.update', $product), [
-            'category_id' => $newCategory->id,
-            'name' => 'Updated Product',
-            'sku' => $product->sku,
-            'description' => 'Updated Description',
-            'price' => 500,
-            'stock' => 10,
-        ]);
+        $response = $this->putJson(
+            route('products.update', $product),
+            [
+                'category_id' => $newCategory->id,
+                'supplier_id' => $newSupplier->id,
+                'name' => 'Updated Product',
+                'sku' => $product->sku,
+                'description' => 'Updated Description',
+                'price' => 500,
+                'stock' => 10,
+            ]
+        );
 
         $response
             ->assertOk()
@@ -131,8 +161,12 @@ class ProductTest extends TestCase
                 'message' => 'Product updated successfully.',
                 'data' => [
                     'category_id' => $newCategory->id,
+                    'supplier_id' => $newSupplier->id,
                     'category' => [
                         'id' => $newCategory->id,
+                    ],
+                    'supplier' => [
+                        'id' => $newSupplier->id,
                     ],
                 ],
             ]);
@@ -140,6 +174,7 @@ class ProductTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'category_id' => $newCategory->id,
+            'supplier_id' => $newSupplier->id,
             'name' => 'Updated Product',
         ]);
     }
@@ -149,7 +184,9 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->deleteJson(route('products.destroy', $product));
+        $response = $this->deleteJson(
+            route('products.destroy', $product)
+        );
 
         $response
             ->assertOk()
@@ -170,7 +207,9 @@ class ProductTest extends TestCase
 
         $product->delete();
 
-        $response = $this->patchJson(route('products.restore', $product->id));
+        $response = $this->patchJson(
+            route('products.restore', $product->id)
+        );
 
         $response
             ->assertOk()
@@ -188,17 +227,40 @@ class ProductTest extends TestCase
     #[Test]
     public function product_requires_existing_category(): void
     {
+        $supplier = Supplier::factory()->create();
+
         $response = $this->postJson(route('products.store'), [
             'category_id' => 999999,
+            'supplier_id' => $supplier->id,
             'name' => 'Laptop',
             'sku' => 'LAPTOP-001',
             'description' => 'Gaming Laptop',
-            'price' => 1200,
+            'price' => 50000,
             'stock' => 5,
         ]);
 
         $response
             ->assertStatus(422)
             ->assertJsonValidationErrors('category_id');
+    }
+
+    #[Test]
+    public function product_requires_existing_supplier(): void
+    {
+        $category = Category::factory()->create();
+
+        $response = $this->postJson(route('products.store'), [
+            'category_id' => $category->id,
+            'supplier_id' => 999999,
+            'name' => 'Laptop',
+            'sku' => 'LAPTOP-002',
+            'description' => 'Gaming Laptop',
+            'price' => 50000,
+            'stock' => 5,
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('supplier_id');
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Filters\ProductFilter;
 use App\Models\Category;
+use App\Models\Supplier;
+
 
 class Product extends Model
 {
@@ -16,6 +18,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'supplier_id',
         'name',
         'sku',
         'description',
@@ -84,4 +87,13 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * Get the supplier that owns the product.
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    
 }

@@ -24,7 +24,10 @@ class ProductController extends Controller
         $perPage = $request->integer('per_page', 10);
  
 
-        $products = Product::with('category')  
+        $products = Product::with([
+                    'category',
+                    'supplier',
+                ])  
             ->filter(new ProductFilter($request)) 
             ->paginate($perPage);
 
@@ -38,7 +41,10 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->validated());
-        $product->load('category');
+        $product->load([
+                    'category',
+                    'supplier',
+                ]);
         return $this->created(
             'Product created successfully.',
             new ProductResource($product)
@@ -51,7 +57,10 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load('category');
+        $product->load([
+                'category',
+                'supplier',
+            ]);
         return new ProductResource($product);
     }
 
@@ -61,7 +70,10 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-        $product->load('category');
+        $product->load([
+                    'category',
+                    'supplier',
+                ]);
         return $this->success(
             'Product updated successfully.',
             new ProductResource($product)
@@ -89,7 +101,10 @@ class ProductController extends Controller
 
         $product->restore();
         
-        $product->load('category');
+        $product->load([
+                    'category',
+                    'supplier',
+                ]);
         return $this->success(
             'Product restored successfully.',
             new ProductResource($product)
