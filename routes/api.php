@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\WarehouseController; 
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\StockTransactionController;
+use App\Http\Controllers\Api\DashboardController;
+
 
 /*
 Route::get('/user', function (Request $request) {
@@ -95,6 +97,16 @@ Route::prefix('v1')->group(function () {
             ])->name('stock-transactions.transfer');
 
 
+
+        /** 
+         * Dashboard routes
+         */
+        Route::get('/dashboard', [
+            DashboardController::class,
+            'index',
+        ])->name('dashboard.index');
+
+        
 
     });
 
