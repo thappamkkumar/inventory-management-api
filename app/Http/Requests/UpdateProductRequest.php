@@ -31,8 +31,7 @@ class UpdateProductRequest extends FormRequest
                 Rule::unique('products', 'sku')->ignore($product->id),
             ],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0'], 
         ];
     }
 
@@ -44,9 +43,7 @@ class UpdateProductRequest extends FormRequest
             'sku.required' => 'SKU is required.',
             'sku.unique' => 'SKU already exists.',
             'price.required' => 'Price is required.',
-            'price.numeric' => 'Price must be a number.',
-            'stock.required' => 'Stock is required.',
-            'stock.integer' => 'Stock must be an integer.',
+            'price.numeric' => 'Price must be a number.', 
         ];
     }
 

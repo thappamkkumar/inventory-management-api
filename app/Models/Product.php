@@ -22,8 +22,7 @@ class Product extends Model
         'name',
         'sku',
         'description',
-        'price',
-        'stock',
+        'price', 
     ];
 
     /**
@@ -59,7 +58,7 @@ class Product extends Model
 
     public function scopeSort($query, ?string $sort, string $direction = 'asc')
     {
-        $allowedSorts = ['name', 'price', 'stock', 'created_at'];
+        $allowedSorts = ['name', 'price',   'created_at'];
 
         if (! in_array($sort, $allowedSorts)) {
             return $query->latest();

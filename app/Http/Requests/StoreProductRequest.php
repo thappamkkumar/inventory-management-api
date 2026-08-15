@@ -34,7 +34,7 @@ class StoreProductRequest extends FormRequest
             'sku' => ['required', 'string', 'max:100', 'unique:products,sku'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
+             
         ];
         
     }
@@ -46,9 +46,8 @@ class StoreProductRequest extends FormRequest
             'sku.required' => 'SKU is required.',
             'sku.unique' => 'SKU already exists.',
             'price.required' => 'Price is required.',
-            'price.numeric' => 'Price must be a number.',
-            'stock.required' => 'Stock is required.',
-            'stock.integer' => 'Stock must be an integer.',
+            'price.numeric' => 'Price must be a number.', 
+             
         ];
     }
 }

@@ -39,7 +39,6 @@ class ProductTest extends TestCase
             'sku' => 'IPHONE-16',
             'description' => 'Latest iPhone',
             'price' => 99999,
-            'stock' => 25,
         ]);
 
         $response
@@ -87,7 +86,6 @@ class ProductTest extends TestCase
                         'sku',
                         'description',
                         'price',
-                        'stock',
                     ],
                 ],
                 'links',
@@ -150,7 +148,6 @@ class ProductTest extends TestCase
                 'sku' => $product->sku,
                 'description' => 'Updated Description',
                 'price' => 500,
-                'stock' => 10,
             ]
         );
 
@@ -236,7 +233,6 @@ class ProductTest extends TestCase
             'sku' => 'LAPTOP-001',
             'description' => 'Gaming Laptop',
             'price' => 50000,
-            'stock' => 5,
         ]);
 
         $response
@@ -256,7 +252,6 @@ class ProductTest extends TestCase
             'sku' => 'LAPTOP-002',
             'description' => 'Gaming Laptop',
             'price' => 50000,
-            'stock' => 5,
         ]);
 
         $response

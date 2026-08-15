@@ -13,8 +13,7 @@ class ProductFilter
 
     public function apply(Builder $query): Builder
     {
-        $this->search($query);
-        $this->stock($query);
+        $this->search($query); 
         $this->price($query);
         $this->sort($query);
 
@@ -35,14 +34,7 @@ class ProductFilter
         });
     }
 
-    protected function stock(Builder $query): void
-    {
-        match ($this->request->stock) {
-            'available' => $query->where('stock', '>', 0),
-            'out' => $query->where('stock', 0),
-            default => null,
-        };
-    }
+   
 
     protected function price(Builder $query): void
     {
@@ -57,7 +49,7 @@ class ProductFilter
 
     protected function sort(Builder $query): void
     {
-        $allowed = ['name', 'price', 'stock', 'created_at'];
+        $allowed = ['name', 'price',   'created_at'];
 
         $sort = $this->request->query('sort');
 

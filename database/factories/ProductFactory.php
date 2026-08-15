@@ -22,30 +22,11 @@ class ProductFactory extends Factory
             'name' => fake()->words(3, true),
             'sku' => strtoupper(fake()->unique()->bothify('SKU-####')),
             'description' => fake()->sentence(),
-            'price' => fake()->randomFloat(2, 10, 10000),
-            'stock' => fake()->numberBetween(0, 500),
+            'price' => fake()->randomFloat(2, 10, 10000), 
         ];
     }
 
-    /**
-     * Product is in stock.
-     */
-    public function inStock(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'stock' => fake()->numberBetween(1, 500),
-        ]);
-    }
-
-    /**
-     * Product is out of stock.
-     */
-    public function outOfStock(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'stock' => 0,
-        ]);
-    }
+    
 
     /**
      * Expensive product.
