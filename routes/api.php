@@ -67,8 +67,14 @@ Route::prefix('v1')->group(function () {
         // Inventory routes 
         Route::get('/inventory', [InventoryController::class, 'index'])
             ->name('inventory.index');
+        Route::get('/inventory/summary', [
+                    InventoryController::class,
+                    'summary',
+                ])->name('inventory.summary');
         Route::get('/inventory/{inventory}', [InventoryController::class, 'show'])
             ->name('inventory.show');
+       
+
 
         // Stock Transaction routes 
         Route::get('/stock-transactions', [

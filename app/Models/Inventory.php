@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 use App\Models\Warehouse;
 use App\Models\StockTransaction;
-
+use App\Filters\InventoryFilter;
 
 class Inventory extends Model
 {
@@ -24,6 +24,14 @@ class Inventory extends Model
         return [
             'quantity' => 'integer',
         ];
+    }
+
+
+    public function scopeFilter(
+        $query,
+        InventoryFilter $filter
+    ) {
+        return $filter->apply($query);
     }
 
     public function product()
