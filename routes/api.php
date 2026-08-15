@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\WarehouseController; 
 use App\Http\Controllers\Api\InventoryController;
-
+use App\Http\Controllers\Api\StockTransactionController;
 
 /*
 Route::get('/user', function (Request $request) {
@@ -69,6 +69,26 @@ Route::prefix('v1')->group(function () {
             ->name('inventory.index');
         Route::get('/inventory/{inventory}', [InventoryController::class, 'show'])
             ->name('inventory.show');
+
+        // Stock Transaction routes 
+        Route::get('/stock-transactions', [
+                StockTransactionController::class,
+                'index',
+            ])->name('stock-transactions.index');
+        Route::post('/stock-transactions', [
+                StockTransactionController::class,
+                'store',
+            ])->name('stock-transactions.store');
+        Route::get('/stock-transactions/{stockTransaction}', [
+                StockTransactionController::class,
+                'show',
+            ])->name('stock-transactions.show');
+        Route::post('/stock-transactions/transfer', [
+                StockTransactionController::class,
+                'transfer',
+            ])->name('stock-transactions.transfer');
+
+
 
     });
 

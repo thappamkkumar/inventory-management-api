@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 use App\Models\Warehouse;
+use App\Models\StockTransaction;
+
 
 class Inventory extends Model
 {
@@ -32,5 +34,10 @@ class Inventory extends Model
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(StockTransaction::class);
     }
 }
